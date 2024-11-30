@@ -19,11 +19,11 @@ jobs:
 
     # Step 2: Setup NuGet (Restoring dependencies)
     - name: Setup NuGet
-      run: nuget restore QuickLook.Plugin.OfficeViewer-Native.sln
+      run: nuget restore QuickLook.Plugin.OfficeViewer.sln
 
     # Step 3: Build the project using MSBuild
     - name: Build the project
-      run: msbuild QuickLook.Plugin.OfficeViewer-Native.sln /p:Configuration=Release
+      run: msbuild QuickLook.Plugin.OfficeViewer.sln /p:Configuration=Release
 
     # Step 4: Ensure bin\Release directory exists
     - name: Ensure bin\Release directory exists
