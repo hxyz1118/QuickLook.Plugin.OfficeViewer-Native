@@ -4,21 +4,28 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
+    # Step 1: Checkout the repository
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    # Step 2: Setup NuGet (Restoring dependencies)
     - name: Setup NuGet
       run: nuget restore QuickLook.Plugin.OfficeViewer-Native.sln
 
+    # Step 3: Build the project using MSBuild
     - name: Build the project
       run: msbuild QuickLook.Plugin.OfficeViewer-Native.sln /p:Configuration=Release
 
+    # Step 4: Ensure the bin\Release directory exists
     - name: Ensure bin\Release directory exists
       run: |
         if (-Not (Test-Path "D:\a\QuickLook.Plugin.OfficeViewer-Native\bin\Release")) {
@@ -26,5 +33,19 @@ jobs:
           New-Item -ItemType Directory -Path "D:\a\QuickLook.Plugin.OfficeViewer-Native\bin\Release"
         }
 
+    # Step 5: Run pack-zip.ps1 script to package the output
     - name: Run pack-zip.ps1 script
       run: powershell -ExecutionPolicy Bypass -File ./Scripts/pack-zip.ps1
+
+    # Step 6: Optionally, upload the artifact (e.g., ZIP file) if needed
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: OfficeViewer-Plugin
+        path: ./bin/Release/*.zip
+
+    # Step 7: Clean up (Optional)
+    - name: Clean up
+      run: |
+        Write-Host "Cleaning up build artifacts..."
+        Remove-Item -Recurse -Force ./bin/Release
