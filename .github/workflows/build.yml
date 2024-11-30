@@ -27,10 +27,10 @@ jobs:
       uses: microsoft/setup-msbuild@v1
 
     - name: Restore NuGet packages
-      run: nuget restore QuickLook.Plugin.OfficeViewer-Native.sln
+      run: nuget restore QuickLook.Plugin.OfficeViewer.sln
 
     - name: Build the solution
-      run: msbuild QuickLook.Plugin.OfficeViewer-Native.sln /p:Configuration=Release
+      run: msbuild QuickLook.Plugin.OfficeViewer.sln /p:Configuration=Release
 
     - name: Run packaging script
       shell: powershell
