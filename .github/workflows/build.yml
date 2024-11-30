@@ -32,6 +32,13 @@ jobs:
     - name: Build the solution
       run: msbuild QuickLook.Plugin.OfficeViewer.sln /p:Configuration=Release
 
+    - name: Ensure bin\Release directory exists
+      run: |
+        if (-Not (Test-Path ".\bin\Release")) {
+          Write-Host "bin\Release directory does not exist. Please check the build output."
+          exit 1
+        }
+      
     - name: Run packaging script
       shell: powershell
       run: |
