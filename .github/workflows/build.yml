@@ -17,34 +17,40 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    # Step 2: Setup NuGet (Restoring dependencies)
-    - name: Setup NuGet
+    # Step 2: Set up .NET SDK (to ensure MSBuild is available)
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.x'  # 你可以指定适合项目的版本
+
+    # Step 3: Restore NuGet packages
+    - name: Restore dependencies
       run: nuget restore QuickLook.Plugin.OfficeViewer.sln
 
-    # Step 3: Build the project using MSBuild
+    # Step 4: Build the project using MSBuild
     - name: Build the project
       run: msbuild QuickLook.Plugin.OfficeViewer.sln /p:Configuration=Release
 
-    # Step 4: Ensure bin\Release directory exists
+    # Step 5: Ensure bin\Release directory exists
     - name: Ensure bin\Release directory exists
       run: |
-        if (-Not (Test-Path "D:\a\QuickLook.Plugin.OfficeViewer-Native\bin\Release")) {
+        if (-Not (Test-Path "D:\a\QuickLook.Plugin.OfficeViewer\bin\Release")) {
           Write-Host "Creating bin\Release directory..."
-          New-Item -ItemType Directory -Path "D:\a\QuickLook.Plugin.OfficeViewer-Native\bin\Release"
+          New-Item -ItemType Directory -Path "D:\a\QuickLook.Plugin.OfficeViewer\bin\Release"
         }
 
-    # Step 5: Run pack-zip.ps1 script to package the output
+    # Step 6: Run pack-zip.ps1 script to package the output
     - name: Run pack-zip.ps1 script
       run: powershell -ExecutionPolicy Bypass -File ./Scripts/pack-zip.ps1
 
-    # Step 6: Upload Artifact (using updated v3)
+    # Step 7: Upload Artifact
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: OfficeViewer-Plugin
         path: ./bin/Release/*.zip
 
-    # Step 7: Clean up (Optional)
+    # Step 8: Clean up (Optional)
     - name: Clean up
       run: |
         Write-Host "Cleaning up build artifacts..."
