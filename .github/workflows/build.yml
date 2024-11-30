@@ -13,37 +13,41 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    # Step 1: Checkout repository
     - name: Checkout repository
       uses: actions/checkout@v3
       with:
         submodules: recursive
 
+    # Step 2: Set up .NET SDK
     - name: Set up .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '6.0.x'
 
+    # Step 3: Set up Visual Studio (MSBuild)
     - name: Set up Visual Studio
       uses: microsoft/setup-msbuild@v1
 
+    # Step 4: Restore NuGet packages
     - name: Restore NuGet packages
       run: nuget restore QuickLook.Plugin.OfficeViewer.sln
 
+    # Step 5: Build the solution and specify output path
     - name: Build the solution
-      run: msbuild QuickLook.Plugin.OfficeViewer.sln /p:Configuration=Release
+      run: msbuild QuickLook.Plugin.OfficeViewer.sln /p:Configuration=Release /p:OutputPath=.\bin\Release
 
-    - name: Ensure bin\Release directory exists
-      run: |
-        if (-Not (Test-Path ".\bin\Release")) {
-          Write-Host "bin\Release directory does not exist. Please check the build output."
-          exit 1
-        }
-      
+    # Step 6: List files in the bin directory (for debugging)
+    - name: List files in bin directory
+      run: dir .\bin\Release
+
+    # Step 7: Run packaging script (pack-zip.ps1)
     - name: Run packaging script
       shell: powershell
       run: |
         .\Scripts\pack-zip.ps1
 
+    # Step 8: Upload plugin artifact as zip file
     - name: Upload plugin artifact
       uses: actions/upload-artifact@v3
       with:
