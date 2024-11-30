@@ -1,4 +1,4 @@
-name: Build and Package
+name: Build and Package Plugin
 
 on:
   push:
@@ -13,45 +13,32 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    # Step 1: Checkout the repository
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
 
-    # Step 2: Set up .NET SDK (to ensure MSBuild is available)
-    - name: Setup .NET SDK
+    - name: Set up .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.x'  # 你可以指定适合项目的版本
+        dotnet-version: '6.0.x'
 
-    # Step 3: Restore NuGet packages
-    - name: Restore dependencies
+    - name: Set up Visual Studio
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Restore NuGet packages
       run: nuget restore QuickLook.Plugin.OfficeViewer.sln
 
-    # Step 4: Build the project using MSBuild
-    - name: Build the project
+    - name: Build the solution
       run: msbuild QuickLook.Plugin.OfficeViewer.sln /p:Configuration=Release
 
-    # Step 5: Ensure bin\Release directory exists
-    - name: Ensure bin\Release directory exists
+    - name: Run packaging script
+      shell: powershell
       run: |
-        if (-Not (Test-Path "D:\a\QuickLook.Plugin.OfficeViewer\bin\Release")) {
-          Write-Host "Creating bin\Release directory..."
-          New-Item -ItemType Directory -Path "D:\a\QuickLook.Plugin.OfficeViewer\bin\Release"
-        }
+        .\Scripts\pack-zip.ps1
 
-    # Step 6: Run pack-zip.ps1 script to package the output
-    - name: Run pack-zip.ps1 script
-      run: powershell -ExecutionPolicy Bypass -File ./Scripts/pack-zip.ps1
-
-    # Step 7: Upload Artifact
-    - name: Upload Artifact
+    - name: Upload plugin artifact
       uses: actions/upload-artifact@v3
       with:
-        name: OfficeViewer-Plugin
-        path: ./bin/Release/*.zip
-
-    # Step 8: Clean up (Optional)
-    - name: Clean up
-      run: |
-        Write-Host "Cleaning up build artifacts..."
-        Remove-Item -Recurse -Force ./bin/Release
+        name: QuickLook.Plugin.OfficeViewer.qlplugin
+        path: ./QuickLook.Plugin.OfficeViewer.qlplugin
