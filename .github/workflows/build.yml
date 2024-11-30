@@ -25,7 +25,7 @@ jobs:
     - name: Build the project
       run: msbuild QuickLook.Plugin.OfficeViewer-Native.sln /p:Configuration=Release
 
-    # Step 4: Ensure the bin\Release directory exists
+    # Step 4: Ensure bin\Release directory exists
     - name: Ensure bin\Release directory exists
       run: |
         if (-Not (Test-Path "D:\a\QuickLook.Plugin.OfficeViewer-Native\bin\Release")) {
@@ -37,9 +37,9 @@ jobs:
     - name: Run pack-zip.ps1 script
       run: powershell -ExecutionPolicy Bypass -File ./Scripts/pack-zip.ps1
 
-    # Step 6: Optionally, upload the artifact (e.g., ZIP file) if needed
+    # Step 6: Upload Artifact (using updated v3)
     - name: Upload Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: OfficeViewer-Plugin
         path: ./bin/Release/*.zip
