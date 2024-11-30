@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              x:Name="panel"
-             d:DesignHeight="1920" d:DesignWidth="1080">
+             d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <WindowsFormsHost x:Name="presenter" />
     </Grid>
