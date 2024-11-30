@@ -35,11 +35,11 @@ jobs:
 
     # Step 5: Build the solution and specify output path
     - name: Build the solution
-      run: msbuild QuickLook.Plugin.OfficeViewer.sln /p:Configuration=Release /p:OutputPath=.\bin\Release
+      run: msbuild QuickLook.Plugin.OfficeViewer.sln /p:Configuration=Release /p:OutputPath=bin\Release
 
     # Step 6: List files in the bin directory (for debugging)
     - name: List files in bin directory
-      run: dir .\bin\Release
+      run: dir bin\Release
 
     # Step 7: Run packaging script (pack-zip.ps1)
     - name: Run packaging script
