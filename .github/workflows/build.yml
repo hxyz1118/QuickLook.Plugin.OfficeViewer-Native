@@ -1,0 +1,44 @@
+name: Build and Package Plugin
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Set up Visual Studio
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Restore NuGet packages
+      run: nuget restore QuickLook.Plugin.OfficeViewer-Native.sln
+
+    - name: Build the solution
+      run: msbuild QuickLook.Plugin.OfficeViewer-Native.sln /p:Configuration=Release
+
+    - name: Run packaging script
+      shell: powershell
+      run: |
+        .\Scripts\pack-zip.ps1
+
+    - name: Upload plugin artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: QuickLook.Plugin.OfficeViewer.qlplugin
+        path: ./QuickLook.Plugin.OfficeViewer.qlplugin
